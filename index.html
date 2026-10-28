@@ -434,6 +434,10 @@ h3{font-size:19px;margin:40px 0 18px}
 /* thumbnails: two side by side, arrows on both sides, no auto sliding */
 #thRow{display:none}
 .dkonly{display:block}
+#work.gridmode #thRow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px;padding:26px 0}
+#work.gridmode #thRow .card{border-radius:22px;cursor:pointer}
+#work.gridmode #thRow .card p{font-size:17px;padding:16px 20px}
+#work.gridmode #thDeskW{display:none}
 .dkw{position:relative;padding:0 88px;margin:10px 0}
 .dkt{display:flex;gap:32px;overflow-x:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:26px 0}
 .dkt .card{flex:0 0 calc((100% - 32px)/2);scroll-snap-align:start;border-radius:22px;cursor:pointer}
@@ -759,8 +763,8 @@ if(C.texts){$('hName').textContent=C.texts.name;$('hTag').innerHTML=esc(C.texts.
 $('stSec').innerHTML=(C.stats||[]).map(x=>'<div class="stat"><b data-n="'+esc(x.n)+'" data-s="'+esc(x.s)+'">'+esc(x.n)+esc(x.s)+'</b><span>'+esc(x.l)+'</span></div>').join('');
 (C.thumbs||[]).forEach((x,i)=>{x.key=x.k||('t'+i);if(x.u)IMG[x.key]=x.u});
 const slide=(C.show||{}).long!==false||(C.show||{}).short!==false;
-const THN=slide?(C.thumbs||[]):(C.thumbs||[]).slice(0,20),PH=slide?0:Math.max(0,10-THN.length);
-$('thRow').className=slide?'row':'thgrid';
+const THN=slide?(C.thumbs||[]):(C.thumbs||[]).slice(0,10),PH=slide?0:Math.max(0,10-THN.length);
+$('thRow').className=slide?'row':'thgrid';document.getElementById('work').classList.toggle('gridmode',!slide);
 if(slide){const pm=document.querySelector('#work p.more'),hd=document.querySelector('#work .head');if(pm&&hd)hd.appendChild(pm)}
 $('thRow').innerHTML=THN.map(x=>'<div class="card" data-src="'+x.key+'"><div class="img"></div><p>'+esc(x.t)+'</p></div>').join('')+Array.from({length:PH},(_,k)=>'<div class="card ph"><div class="img"></div><p>Your thumbnail '+(THN.length+k+1)+'</p></div>').join('');
 document.querySelectorAll('#thRow .card[data-src]').forEach(c=>IMG[c.dataset.src]&&paint(c,c.dataset.src,c.querySelector('p').textContent));
@@ -1004,7 +1008,7 @@ function draw(){
  const b=document.getElementById('cpBody');let h='';
  if(tab==='sections'){
   const SEC=[['hero','Top section (name and intro)'],['gig','Gig video (top of the page)'],['stats','Numbers'],['clients','Clients'],['work','Thumbnails'],['long','Long videos'],['short','Short videos'],['reviews','Client reviews'],['faq','FAQ'],['contact','Contact']];
-  h+='<div class="cpg"><b>Show or hide sections</b><p class="hint">Tap a switch, then press Save. Thumbnails slide automatically while a video section is on. When both video sections are off, thumbnails show in a grid (up to 20) with See more below.</p>'+SEC.map(([k,l])=>'<label class="sw"><span>'+l+'</span><input type="checkbox" data-sec="'+k+'"'+(W.show[k]===false?'':' checked')+'></label>').join('')+'</div>';
+  h+='<div class="cpg"><b>Show or hide sections</b><p class="hint">Tap a switch, then press Save. Thumbnails slide automatically while a video section is on. When both video sections are off, 10 thumbnails show in a grid (2 per row on PC) with See more below.</p>'+SEC.map(([k,l])=>'<label class="sw"><span>'+l+'</span><input type="checkbox" data-sec="'+k+'"'+(W.show[k]===false?'':' checked')+'></label>').join('')+'</div>';
  h+=cxSec();}else if(tab==='gig'){
   const g=W.gig;h+='<div class="cpg"><b>Gig video</b><p class="hint">Shown at the top of the page. Use the Sections tab to turn it on or off. Add a YouTube link or upload a video, add a cover image if you like, then press Save.</p>'+inp('YouTube link (paste the Share link from YouTube)','data-gg="y"',g.y||'')+dz(g,'u','Or upload a video (up to 50 MB; for bigger videos use the YouTube link above)',0,'vid')+dz(g,'p','Cover image (optional)',1280,'img')+'<div class="cpr"><button class="btn" data-a="rmgig">Remove video</button></div></div>';
  }else if(tab==='texts'){
