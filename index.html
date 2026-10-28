@@ -714,7 +714,7 @@ try{const x=new XMLHttpRequest();x.open('GET','content.json?'+Date.now(),false);
 try{if(localStorage.getItem('nf_ep')!=='3'){localStorage.setItem('nf_ep','3');localStorage.removeItem('nf_u');const q=JSON.parse(localStorage.getItem('nf_state')||'null');if(q&&q.auth){delete q.auth;localStorage.setItem('nf_state',JSON.stringify(q))}}}catch(e){}
 try{const ls=localStorage.getItem('nf_state');if(ls){JSON.parse(ls);RAW=ls}}catch(e){}
 const SB_URL='https://hsnyzlzyslsnohtkmjgc.supabase.co',SB_KEY='sb_publishable_AwopwlfAoJqJ5epXIvZhqw_QNcBbEut',SB_EMAIL='';
-if(!window.__NF_PV){try{const x=new XMLHttpRequest();x.open('GET',SB_URL+'/rest/v1/site_content?id=eq.main&select=data&_='+Date.now(),false);x.setRequestHeader('apikey',SB_KEY);x.setRequestHeader('Accept','application/json');x.send();if(x.status===200){const a=JSON.parse(x.responseText);if(a&&a[0]&&a[0].data&&typeof a[0].data==='object')RAW=JSON.stringify(a[0].data)}}catch(e){}}
+if(!window.__NF_PV){try{const x=new XMLHttpRequest();x.open('GET',SB_URL+'/rest/v1/site_content?id=eq.main&select=data',false);x.setRequestHeader('apikey',SB_KEY);x.setRequestHeader('Accept','application/json');x.send();if(x.status===200){const a=JSON.parse(x.responseText);if(a&&a[0]&&a[0].data&&typeof a[0].data==='object')RAW=JSON.stringify(a[0].data)}}catch(e){}}
 if(window.__NF_PV)RAW=document.getElementById('content').textContent;
 const EMB=JSON.parse(document.getElementById('content').textContent),EMBV=[];
 const walkV=(o,f)=>{if(o.gig)f(o.gig);['long','short'].forEach(k=>(o[k]||[]).forEach(f))};
