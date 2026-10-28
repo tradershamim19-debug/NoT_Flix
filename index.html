@@ -713,7 +713,7 @@ let RAW=document.getElementById('content').textContent;
 try{const x=new XMLHttpRequest();x.open('GET','content.json?'+Date.now(),false);x.send();if(x.status===200){JSON.parse(x.responseText);RAW=x.responseText}}catch(e){}
 try{if(localStorage.getItem('nf_ep')!=='3'){localStorage.setItem('nf_ep','3');localStorage.removeItem('nf_u');const q=JSON.parse(localStorage.getItem('nf_state')||'null');if(q&&q.auth){delete q.auth;localStorage.setItem('nf_state',JSON.stringify(q))}}}catch(e){}
 try{const ls=localStorage.getItem('nf_state');if(ls){JSON.parse(ls);RAW=ls}}catch(e){}
-const SB_URL='https://hsnyzlzyslsnohtkmjgc.supabase.co',SB_KEY='sb_publishable_AwopwlfAoJqJ5epXIvZhqw_QNcBbEut',SB_EMAIL='tradershamim18@gmail.com';
+const SB_URL='https://hsnyzlzyslsnohtkmjgc.supabase.co',SB_KEY='sb_publishable_AwopwlfAoJqJ5epXIvZhqw_QNcBbEut',SB_EMAIL='';
 if(!window.__NF_PV){try{const x=new XMLHttpRequest();x.open('GET',SB_URL+'/rest/v1/site_content?id=eq.main&select=data&_='+Date.now(),false);x.setRequestHeader('apikey',SB_KEY);x.setRequestHeader('Accept','application/json');x.send();if(x.status===200){const a=JSON.parse(x.responseText);if(a&&a[0]&&a[0].data&&typeof a[0].data==='object')RAW=JSON.stringify(a[0].data)}}catch(e){}}
 if(window.__NF_PV)RAW=document.getElementById('content').textContent;
 const EMB=JSON.parse(document.getElementById('content').textContent),EMBV=[];
@@ -1051,29 +1051,30 @@ async function saveLegacy(){
 }
 /* ---------- Supabase: login, media upload, save ---------- */
 const SBA={tok:null,ref:null,exp:0};
-try{const q=JSON.parse(localStorage.getItem('nf_sb')||'null');if(q)Object.assign(SBA,q)}catch(e){}
-const sbStore=d=>{SBA.tok=d.access_token;SBA.ref=d.refresh_token;SBA.exp=d.expires_at||(Date.now()/1000+(d.expires_in||3600));try{localStorage.setItem('nf_sb',JSON.stringify(SBA))}catch(e){}};
+try{const q=JSON.parse(localStorage.getItem('nf_sb2')||'null');if(q)Object.assign(SBA,q)}catch(e){}
+const sbStore=d=>{SBA.tok=d.access_token;SBA.ref=d.refresh_token;SBA.exp=d.expires_at||(Date.now()/1000+(d.expires_in||3600));try{localStorage.setItem('nf_sb2',JSON.stringify(SBA))}catch(e){}};
 const sbLoginDialog=()=>new Promise(res=>{const o=document.createElement('div');o.className='cpl';
- o.innerHTML='<div class="cpcard stc" role="dialog" aria-modal="true" aria-labelledby="sbT"><div class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6M4 11.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div><span class="ste">One-time setup</span><h2 id="sbT">Connect your database.</h2><p class="sts">Enter the password of your Supabase user ('+SB_EMAIL+'). You only need to do this once on this device.</p><label class="stf">Database password<input id="sbPw" type="password" placeholder="Enter your password" autocomplete="current-password"></label><p class="sbm" id="sbM"></p><button type="button" class="stb" id="sbGo"><span>Connect</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button type="button" class="stx" id="sbX">Cancel</button></div>';
- document.body.appendChild(o);const i=o.querySelector('#sbPw'),m=o.querySelector('#sbM'),g=o.querySelector('#sbGo'),lab=g.querySelector('span');setTimeout(()=>i.focus(),120);
+ o.innerHTML='<div class="cpcard stc" role="dialog" aria-modal="true" aria-labelledby="sbT"><div class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6M4 11.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div><span class="ste">One-time setup</span><h2 id="sbT">Connect your database.</h2><p class="sts">Enter the email and password of your Supabase user. You only need to do this once on this device.</p><label class="stf">Database email<input id="sbEm" type="email" placeholder="you@gmail.com" autocomplete="username" autocapitalize="none" spellcheck="false"></label><label class="stf">Database password<input id="sbPw" type="password" placeholder="Enter your password" autocomplete="current-password"></label><p class="sbm" id="sbM"></p><button type="button" class="stb" id="sbGo"><span>Connect</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button type="button" class="stx" id="sbX">Cancel</button></div>';
+ document.body.appendChild(o);const em=o.querySelector('#sbEm'),i=o.querySelector('#sbPw'),m=o.querySelector('#sbM'),g=o.querySelector('#sbGo'),lab=g.querySelector('span');try{em.value=localStorage.getItem('nf_sbe')||''}catch(e){}
+ setTimeout(()=>(em.value?i:em).focus(),120);
  const done=v=>{o.remove();res(v)};
- const login=pw=>fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:SB_EMAIL,password:pw})});
- const go=async()=>{const pw=i.value;if(!pw){m.className='sbm';m.textContent='Enter your password.';return}
+ const login=pw=>fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:em.value.trim().toLowerCase(),password:pw})});
+ const go=async()=>{const pw=i.value;if(!em.value.trim()){m.className='sbm';m.textContent='Enter your email.';em.focus();return}if(!pw){m.className='sbm';m.textContent='Enter your password.';return}
   g.classList.remove('pop');void g.offsetWidth;g.classList.add('pop');g.disabled=true;lab.textContent='Connecting…';m.textContent='';
   try{let r=await login(pw);
    if(!r.ok&&pw!==pw.trim())r=await login(pw.trim());
-   if(r.ok){sbStore(await r.json());m.className='sbm ok';m.textContent='Connected ✓';lab.textContent='Connected';setTimeout(()=>done(true),450);return}
+   if(r.ok){try{localStorage.setItem('nf_sbe',em.value.trim().toLowerCase())}catch(e){}sbStore(await r.json());m.className='sbm ok';m.textContent='Connected ✓';lab.textContent='Connected';setTimeout(()=>done(true),450);return}
    let er={};try{er=await r.json()}catch(e){}
    const code=er.error_code||er.code||'',msg=er.msg||er.error_description||er.message||'';
    m.className='sbm';
    if(code==='email_not_confirmed')m.textContent='This user is not confirmed yet. Confirm it in Supabase (Authentication → Users).';
    else if(r.status===429||code==='over_request_rate_limit')m.textContent='Too many attempts. Wait a few minutes and try again.';
-   else if(code==='invalid_credentials'||r.status===400)m.textContent='Wrong password for '+SB_EMAIL+'. ('+(code||msg||r.status)+')';
+   else if(code==='invalid_credentials'||r.status===400)m.textContent='Wrong email or password. ('+(code||msg||r.status)+')';
    else m.textContent=(msg||'Login failed')+' ('+r.status+')';
    i.focus()
   }catch(e){m.className='sbm';m.textContent='Could not reach the database. Check your internet.'}
   g.disabled=false;lab.textContent='Connect'};
- g.addEventListener('click',go);o.querySelector('#sbX').addEventListener('click',()=>done(false));i.addEventListener('keydown',e=>{if(e.key==='Enter')go();if(e.key==='Escape')done(false)})});
+ g.addEventListener('click',go);o.querySelector('#sbX').addEventListener('click',()=>done(false));[em,i].forEach(x=>x.addEventListener('keydown',e=>{if(e.key==='Enter')go();if(e.key==='Escape')done(false)}))});
 async function sbToken(force){
  if(!force&&SBA.tok&&SBA.exp>Date.now()/1000+60)return SBA.tok;
  if(!force&&SBA.ref){try{const r=await fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:SBA.ref})});if(r.ok){sbStore(await r.json());return SBA.tok}}catch(e){}}
