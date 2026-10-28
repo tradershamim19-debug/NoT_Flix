@@ -1057,11 +1057,20 @@ const sbLoginDialog=()=>new Promise(res=>{const o=document.createElement('div');
  o.innerHTML='<div class="cpcard stc" role="dialog" aria-modal="true" aria-labelledby="sbT"><div class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6M4 11.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div><span class="ste">One-time setup</span><h2 id="sbT">Connect your database.</h2><p class="sts">Enter the password of your Supabase user ('+SB_EMAIL+'). You only need to do this once on this device.</p><label class="stf">Database password<input id="sbPw" type="password" placeholder="Enter your password" autocomplete="current-password"></label><p class="sbm" id="sbM"></p><button type="button" class="stb" id="sbGo"><span>Connect</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button type="button" class="stx" id="sbX">Cancel</button></div>';
  document.body.appendChild(o);const i=o.querySelector('#sbPw'),m=o.querySelector('#sbM'),g=o.querySelector('#sbGo'),lab=g.querySelector('span');setTimeout(()=>i.focus(),120);
  const done=v=>{o.remove();res(v)};
+ const login=pw=>fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:SB_EMAIL,password:pw})});
  const go=async()=>{const pw=i.value;if(!pw){m.className='sbm';m.textContent='Enter your password.';return}
   g.classList.remove('pop');void g.offsetWidth;g.classList.add('pop');g.disabled=true;lab.textContent='Connecting…';m.textContent='';
-  try{const r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:SB_EMAIL,password:pw})});
+  try{let r=await login(pw);
+   if(!r.ok&&pw!==pw.trim())r=await login(pw.trim());
    if(r.ok){sbStore(await r.json());m.className='sbm ok';m.textContent='Connected ✓';lab.textContent='Connected';setTimeout(()=>done(true),450);return}
-   m.className='sbm';m.textContent='Wrong password. Try again.';i.value='';i.focus()
+   let er={};try{er=await r.json()}catch(e){}
+   const code=er.error_code||er.code||'',msg=er.msg||er.error_description||er.message||'';
+   m.className='sbm';
+   if(code==='email_not_confirmed')m.textContent='This user is not confirmed yet. Confirm it in Supabase (Authentication → Users).';
+   else if(r.status===429||code==='over_request_rate_limit')m.textContent='Too many attempts. Wait a few minutes and try again.';
+   else if(code==='invalid_credentials'||r.status===400)m.textContent='Wrong password for '+SB_EMAIL+'. ('+(code||msg||r.status)+')';
+   else m.textContent=(msg||'Login failed')+' ('+r.status+')';
+   i.focus()
   }catch(e){m.className='sbm';m.textContent='Could not reach the database. Check your internet.'}
   g.disabled=false;lab.textContent='Connect'};
  g.addEventListener('click',go);o.querySelector('#sbX').addEventListener('click',()=>done(false));i.addEventListener('keydown',e=>{if(e.key==='Enter')go();if(e.key==='Escape')done(false)})});
